@@ -22,10 +22,6 @@
             border-bottom: 1px solid rgba(220, 220, 220, 0.5);
         }
 
-        .gradient-overlay {
-            background: linear-gradient(to bottom, transparent 20%, rgba(0,0,0,0.8) 100%);
-        }
-
         /* Sidebar & Modal Animations */
         #cart-sidebar {
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -60,9 +56,18 @@
 <body class="text-stone-800">
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 glass-effect py-4 px-6 md:px-12 flex justify-between items-center">
-        <h1 class="serif text-2xl font-bold tracking-tight text-stone-900 cursor-pointer" onclick="closeProductView()">LUXE KASHMIRI</h1>
+    <nav class="fixed top-0 w-full z-50 glass-effect py-5 px-6 md:px-12 flex justify-between items-center">
+        <!-- Logo -->
+        <h1 class="serif text-xl md:text-2xl font-bold tracking-tight text-stone-900 cursor-pointer" onclick="closeProductView()">LUXE KASHMIRI</h1>
         
+        <!-- Navigation Links (Centered Alignment) -->
+        <div class="hidden md:flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+            <a href="#collection" class="hover:text-amber-700 transition" onclick="closeProductView()">Collection</a>
+            <a href="#heritage" class="hover:text-amber-700 transition" onclick="closeProductView()">Heritage</a>
+            <a href="#contact" class="hover:text-amber-700 transition" onclick="closeProductView()">Inquiry</a>
+        </div>
+
+        <!-- Cart Button -->
         <div class="flex items-center gap-6">
             <button onclick="toggleCart()" class="relative p-2 text-stone-900 hover:text-amber-700 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,7 +81,7 @@
     <!-- Main Content Container -->
     <div id="main-homepage">
         <!-- Header -->
-        <header class="max-w-7xl mx-auto px-6 pt-32 pb-16 text-center">
+        <header class="max-w-7xl mx-auto px-6 pt-40 pb-16 text-center">
             <span class="text-amber-700 font-bold tracking-[0.4em] uppercase text-[10px] mb-6 block">Premium Handloom Heritage</span>
             <h2 class="serif text-5xl md:text-7xl mb-8 text-stone-900">Spring Collection</h2>
             <p class="max-w-2xl mx-auto text-stone-500 text-lg leading-relaxed font-light">
@@ -118,6 +123,12 @@
                     <p class="text-amber-700 font-medium mt-1">$4,800.00</p>
                 </div>
             </div>
+        </section>
+
+        <!-- Heritage Section -->
+        <section id="heritage" class="py-20 px-6 max-w-4xl mx-auto text-center border-t border-stone-100">
+            <h2 class="serif text-3xl mb-6">A Legacy of Artistry</h2>
+            <p class="text-stone-500 font-light leading-relaxed">Every piece in our collection is born from the ancient techniques of Kashmiri artisans, preserving a heritage that spans generations. Each thread is hand-spun and each pattern hand-embroidered, making every shawl a unique piece of history.</p>
         </section>
 
         <!-- Inquiry Section -->
