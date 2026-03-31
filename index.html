@@ -39,20 +39,19 @@
         .aspect-shawl { aspect-ratio: 3 / 4; }
 
         /* Sidebar & Modal Animations */
-        #cart-sidebar, #checkout-modal {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        #cart-sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
         }
-        
-        #cart-sidebar { transform: translateX(100%); }
         #cart-sidebar.open { transform: translateX(0); }
 
         #checkout-modal { 
             display: none;
-            opacity: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
         }
         #checkout-modal.open { 
             display: flex;
-            opacity: 1;
         }
 
         .overlay {
@@ -60,6 +59,10 @@
             background: rgba(0,0,0,0.6);
         }
         .overlay.open { display: block; }
+
+        input, select {
+            border-radius: 0;
+        }
     </style>
 </head>
 <body class="text-stone-800">
@@ -84,7 +87,7 @@
         </div>
     </nav>
 
-    <!-- UI Overlays -->
+    <!-- UI Overlay -->
     <div id="ui-overlay" class="overlay fixed inset-0 z-[60]" onclick="closeAllUI()"></div>
 
     <!-- Shopping Bag Sidebar -->
@@ -109,66 +112,91 @@
 
     <!-- Checkout Modal -->
     <div id="checkout-modal" class="fixed inset-0 z-[80] items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
             <div class="p-6 border-b flex justify-between items-center bg-stone-50">
-                <h2 class="serif text-2xl">Complete Your Order</h2>
-                <button onclick="closeCheckout()" class="text-stone-400 hover:text-stone-900">&times;</button>
+                <h2 class="serif text-2xl text-stone-900">Confirm Your Order</h2>
+                <button onclick="closeCheckout()" class="text-stone-400 hover:text-stone-900 text-3xl transition">&times;</button>
             </div>
-            <form id="order-form" class="p-8 overflow-y-auto" onsubmit="handleOrder(event)">
-                <div class="grid md:grid-cols-2 gap-6 mb-8">
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold uppercase tracking-wider text-stone-500">Full Name</label>
-                        <input type="text" id="cust-name" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition" placeholder="Malaika Khan">
+            <form id="order-form" class="p-8 overflow-y-auto scrollbar-hide" onsubmit="handleOrder(event)">
+                <div class="grid md:grid-cols-2 gap-x-6 gap-y-5 mb-8">
+                    <!-- Name & Email -->
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">First Name</label>
+                        <input type="text" id="cust-fname" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="Enter first name">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold uppercase tracking-wider text-stone-500">Phone Number</label>
-                        <input type="tel" id="cust-phone" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition" placeholder="+92 ...">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">Last Name</label>
+                        <input type="text" id="cust-lname" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="Enter last name">
                     </div>
-                    <div class="md:col-span-2 space-y-2">
-                        <label class="text-xs font-bold uppercase tracking-wider text-stone-500">Shipping Address</label>
-                        <input type="text" id="cust-address" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition" placeholder="Street, House No, Area">
+                    <div class="md:col-span-2 space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">Email Address</label>
+                        <input type="email" id="cust-email" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="email@example.com">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold uppercase tracking-wider text-stone-500">City</label>
-                        <input type="text" id="cust-city" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition" placeholder="Lahore, Islamabad...">
+
+                    <!-- Address 3 Lines -->
+                    <div class="md:col-span-2 space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500 text-amber-800">Shipping Address</label>
+                        <input type="text" id="cust-addr1" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent mb-2" placeholder="Line 1: Street Address / House Number">
+                        <input type="text" id="cust-addr2" class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent mb-2" placeholder="Line 2: Apartment, Suite, Floor (Optional)">
+                        <input type="text" id="cust-addr3" class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="Line 3: Landmark / Sector">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold uppercase tracking-wider text-stone-500">Payment Method</label>
-                        <select id="cust-payment" class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-white">
+
+                    <!-- City, Country, Phone -->
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">City</label>
+                        <input type="text" id="cust-city" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="City name">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">Country</label>
+                        <input type="text" id="cust-country" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="Pakistan">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">Phone Number</label>
+                        <input type="tel" id="cust-phone" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="+92 ...">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">Confirmation Contact</label>
+                        <input type="text" id="cust-confirm-code" required class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-transparent" placeholder="Email or Number for code">
+                    </div>
+
+                    <!-- Payment -->
+                    <div class="md:col-span-2 space-y-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-stone-500">Payment Method</label>
+                        <select id="cust-payment" class="w-full border-b border-stone-200 py-2 focus:border-amber-700 outline-none transition bg-white cursor-pointer">
                             <option value="Cash on Delivery">Cash on Delivery (COD)</option>
                             <option value="Online Card">Credit/Debit Card</option>
                         </select>
                     </div>
                 </div>
                 
-                <div class="bg-amber-50 p-6 rounded-2xl mb-8">
+                <div class="bg-stone-50 p-6 rounded-2xl mb-8 border border-stone-100">
                     <div class="flex justify-between items-center font-bold text-stone-900">
-                        <span>Final Amount (incl. shipping)</span>
-                        <span id="checkout-final-total">$0.00</span>
+                        <span class="text-xs uppercase tracking-widest">Total to Pay</span>
+                        <span id="checkout-final-total" class="text-xl">$0.00</span>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-amber-800 text-white py-4 rounded-xl font-bold hover:bg-stone-900 transition uppercase tracking-widest shadow-lg">Confirm Order</button>
+                <button type="submit" class="w-full bg-stone-900 text-white py-5 rounded-xl font-bold hover:bg-amber-900 transition uppercase tracking-[0.2em] shadow-xl text-sm">Confirm & Send Order Details</button>
             </form>
         </div>
     </div>
 
-    <!-- Success Screen (Hidden by default) -->
+    <!-- Success Screen -->
     <div id="success-screen" class="fixed inset-0 z-[100] bg-white hidden flex-col items-center justify-center p-6 text-center">
-        <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
-            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+        <div class="w-24 h-24 bg-stone-100 text-stone-900 rounded-full flex items-center justify-center mb-8 border-2 border-stone-900">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         </div>
-        <h2 class="serif text-4xl mb-4">Order Placed!</h2>
-        <p class="text-stone-600 mb-8 max-w-sm">Thank you for choosing Luxe Kashmiri. Your order <span id="order-id-display" class="font-bold text-stone-900"></span> has been received.</p>
-        <button onclick="location.reload()" class="bg-stone-900 text-white px-12 py-4 rounded-xl font-bold uppercase tracking-widest text-sm">Back to Home</button>
+        <h2 class="serif text-4xl mb-4 text-stone-900">Order Successful</h2>
+        <p class="text-stone-500 mb-8 max-w-sm">Order <span id="order-id-display" class="font-bold text-stone-900"></span> has been placed. We are sending your details via WhatsApp for confirmation.</p>
+        <button onclick="location.reload()" class="bg-stone-900 text-white px-12 py-4 rounded-full font-bold uppercase tracking-widest text-xs">Continue Shopping</button>
     </div>
 
     <!-- Header Section -->
-    <header class="max-w-7xl mx-auto px-6 pt-20 pb-16 text-center">
-        <span class="text-amber-700 font-semibold tracking-[0.4em] uppercase text-xs mb-4 block">Hand-Woven Heritage</span>
-        <h2 class="serif text-5xl md:text-7xl mb-8 text-stone-900">New Arrivals</h2>
-        <p class="max-w-3xl mx-auto text-stone-600 text-lg leading-relaxed font-light">
-            Our latest masterpieces featuring the "Shikargah" court scenes and the rare "Peacock & Deer" arch embroidery.
+    <header class="max-w-7xl mx-auto px-6 pt-24 pb-16 text-center">
+        <span class="text-amber-700 font-bold tracking-[0.4em] uppercase text-[10px] mb-6 block">Premium Handloom Heritage</span>
+        <h2 class="serif text-5xl md:text-7xl mb-8 text-stone-900 leading-tight">Spring Collection</h2>
+        <p class="max-w-2xl mx-auto text-stone-500 text-lg leading-relaxed font-light">
+            Exquisite pashmina masterpieces, meticulously crafted by master weavers in the heart of the valley.
         </p>
     </header>
 
@@ -177,43 +205,43 @@
         <div id="carousel" class="carousel-container flex overflow-x-auto gap-8 pb-12">
             
             <!-- Product 1 -->
-            <div class="carousel-item flex-none w-[90%] md:w-[500px] group">
-                <div class="relative overflow-hidden rounded-3xl shadow-2xl aspect-shawl bg-stone-200">
-                    <img src="https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_1_wrr0bk.jpg" alt="Black Peacock Pashmina" class="w-full h-full object-cover group-hover:scale-110 transition duration-1000">
-                    <div class="absolute inset-0 gradient-overlay"></div>
-                    <div class="absolute bottom-0 left-0 right-0 p-10 text-white">
-                        <p class="text-xs uppercase tracking-[0.3em] mb-3 text-amber-400 font-bold">New Arrival</p>
+            <div class="carousel-item flex-none w-[85%] md:w-[480px] group">
+                <div class="relative overflow-hidden rounded-3xl shadow-2xl aspect-shawl bg-stone-100">
+                    <img src="https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_1_wrr0bk.jpg" alt="Black Peacock" class="w-full h-full object-cover group-hover:scale-110 transition duration-[1500ms]">
+                    <div class="absolute inset-0 gradient-overlay opacity-60"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
+                        <p class="text-[10px] uppercase tracking-[0.3em] mb-4 text-amber-400 font-bold">The Royal Arch</p>
                         <h3 class="serif text-3xl mb-3">Midnight Peacock Arch</h3>
-                        <p class="text-xl font-light text-stone-200 mb-4">$3,200.00</p>
-                        <button onclick="addToCart('Midnight Peacock Arch', 3200, 'https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_1_wrr0bk.jpg')" class="bg-white text-stone-900 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-amber-100 transition w-full">Add to Bag</button>
+                        <p class="text-xl font-light text-stone-200 mb-6">$3,200.00</p>
+                        <button onclick="addToCart('Midnight Peacock Arch', 3200, 'https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_1_wrr0bk.jpg')" class="bg-white text-stone-900 px-8 py-4 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-amber-100 transition w-full shadow-lg">Add to Bag</button>
                     </div>
                 </div>
             </div>
 
             <!-- Product 2 -->
-            <div class="carousel-item flex-none w-[90%] md:w-[500px] group">
-                <div class="relative overflow-hidden rounded-3xl shadow-2xl aspect-shawl bg-stone-200">
-                    <img src="https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_bfxf1e.jpg" alt="Pink Shikargah Pashmina" class="w-full h-full object-cover group-hover:scale-110 transition duration-1000">
-                    <div class="absolute inset-0 gradient-overlay"></div>
-                    <div class="absolute bottom-0 left-0 right-0 p-10 text-white">
-                        <p class="text-xs uppercase tracking-[0.3em] mb-3 text-amber-400 font-bold">Vibrant Series</p>
+            <div class="carousel-item flex-none w-[85%] md:w-[480px] group">
+                <div class="relative overflow-hidden rounded-3xl shadow-2xl aspect-shawl bg-stone-100">
+                    <img src="https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_bfxf1e.jpg" alt="Rosewood" class="w-full h-full object-cover group-hover:scale-110 transition duration-[1500ms]">
+                    <div class="absolute inset-0 gradient-overlay opacity-60"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
+                        <p class="text-[10px] uppercase tracking-[0.3em] mb-4 text-amber-400 font-bold">Classic Shikargah</p>
                         <h3 class="serif text-3xl mb-3">Rosewood Shikargah</h3>
-                        <p class="text-xl font-light text-stone-200 mb-4">$2,950.00</p>
-                        <button onclick="addToCart('Rosewood Shikargah', 2950, 'https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_bfxf1e.jpg')" class="bg-white text-stone-900 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-amber-100 transition w-full">Add to Bag</button>
+                        <p class="text-xl font-light text-stone-200 mb-6">$2,950.00</p>
+                        <button onclick="addToCart('Rosewood Shikargah', 2950, 'https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.38_PM_bfxf1e.jpg')" class="bg-white text-stone-900 px-8 py-4 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-amber-100 transition w-full shadow-lg">Add to Bag</button>
                     </div>
                 </div>
             </div>
 
             <!-- Product 3 -->
-            <div class="carousel-item flex-none w-[90%] md:w-[500px] group">
-                <div class="relative overflow-hidden rounded-3xl shadow-2xl aspect-shawl bg-stone-200">
-                    <img src="https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.39_PM_gdpcno.jpg" alt="Imperial Court Pashmina" class="w-full h-full object-cover group-hover:scale-110 transition duration-1000">
-                    <div class="absolute inset-0 gradient-overlay"></div>
-                    <div class="absolute bottom-0 left-0 right-0 p-10 text-white">
-                        <p class="text-xs uppercase tracking-[0.3em] mb-3 text-amber-400 font-bold">Masterpiece</p>
+            <div class="carousel-item flex-none w-[85%] md:w-[480px] group">
+                <div class="relative overflow-hidden rounded-3xl shadow-2xl aspect-shawl bg-stone-100">
+                    <img src="https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.39_PM_gdpcno.jpg" alt="Imperial Court" class="w-full h-full object-cover group-hover:scale-110 transition duration-[1500ms]">
+                    <div class="absolute inset-0 gradient-overlay opacity-60"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
+                        <p class="text-[10px] uppercase tracking-[0.3em] mb-4 text-amber-400 font-bold">Gallery Piece</p>
                         <h3 class="serif text-3xl mb-3">Imperial Court Scene</h3>
-                        <p class="text-xl font-light text-stone-200 mb-4">$4,800.00</p>
-                        <button onclick="addToCart('Imperial Court Scene', 4800, 'https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.39_PM_gdpcno.jpg')" class="bg-white text-stone-900 px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-amber-100 transition w-full">Add to Bag</button>
+                        <p class="text-xl font-light text-stone-200 mb-6">$4,800.00</p>
+                        <button onclick="addToCart('Imperial Court Scene', 4800, 'https://res.cloudinary.com/dhpjzb3ft/image/upload/WhatsApp_Image_2026-03-31_at_4.46.39_PM_gdpcno.jpg')" class="bg-white text-stone-900 px-8 py-4 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-amber-100 transition w-full shadow-lg">Add to Bag</button>
                     </div>
                 </div>
             </div>
@@ -221,31 +249,31 @@
     </section>
 
     <!-- Heritage Section -->
-    <section id="heritage" class="bg-stone-900 text-stone-300 py-32 px-6 overflow-hidden">
+    <section id="heritage" class="bg-stone-900 text-stone-300 py-32 px-6">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
             <div class="space-y-10 text-white">
-                <span class="text-amber-500 font-bold tracking-widest text-xs uppercase">Authenticity</span>
-                <h4 class="serif text-5xl leading-tight">Hand-Stitched Legacy</h4>
-                <p class="opacity-70">Every Luxe Kashmiri piece is a testament to the centuries-old craftsmanship of Srinagar's master weavers.</p>
+                <span class="text-amber-500 font-bold tracking-[0.4em] text-[10px] uppercase">Craftsmanship</span>
+                <h4 class="serif text-5xl leading-tight">Generations of Weaving</h4>
+                <p class="opacity-70 leading-relaxed text-lg font-light">Every Luxe Kashmiri piece is a testament to the centuries-old craftsmanship surviving through the hands of our master artisans.</p>
             </div>
-            <img src="https://images.unsplash.com/photo-1544281679-53571511c834?auto=format&fit=crop&q=80" alt="Weaving" class="rounded-3xl shadow-2xl opacity-60">
+            <img src="https://images.unsplash.com/photo-1544281679-53571511c834?auto=format&fit=crop&q=80" alt="Weaving" class="rounded-3xl shadow-2xl opacity-80 grayscale hover:grayscale-0 transition duration-1000">
         </div>
     </section>
 
     <!-- Inquiry Section -->
-    <section id="contact" class="py-24 px-6 max-w-3xl mx-auto text-center">
-        <h2 class="serif text-4xl mb-6 text-stone-900">Reserve Your Piece</h2>
-        <p class="text-stone-600 mb-10 text-lg">For custom requests or bulk orders, please message our concierge.</p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="mailto:sales@luxekashmiri.com" class="bg-stone-900 text-white px-10 py-4 rounded-xl hover:bg-amber-900 transition font-semibold shadow-lg uppercase tracking-widest text-sm">Email Inquiry</a>
-            <a href="#" class="bg-white border-2 border-stone-900 text-stone-900 px-10 py-4 rounded-xl hover:bg-stone-50 transition font-semibold shadow-md uppercase tracking-widest text-sm">WhatsApp Concierge</a>
+    <section id="contact" class="py-32 px-6 max-w-3xl mx-auto text-center">
+        <h2 class="serif text-4xl mb-6 text-stone-900 font-bold">Personal Concierge</h2>
+        <p class="text-stone-500 mb-12 text-lg font-light">Available for bespoke sizing and worldwide shipping inquiries.</p>
+        <div class="flex flex-col sm:flex-row gap-6 justify-center">
+            <a href="mailto:sales@luxekashmiri.com" class="bg-stone-900 text-white px-10 py-5 rounded-xl hover:bg-amber-900 transition font-bold uppercase tracking-widest text-xs shadow-xl">Email Sales</a>
+            <a href="#" class="bg-white border border-stone-900 text-stone-900 px-10 py-5 rounded-xl hover:bg-stone-50 transition font-bold uppercase tracking-widest text-xs shadow-lg">WhatsApp Us</a>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-stone-50 py-16 px-6 text-center border-t border-stone-200">
-        <h1 class="serif text-xl font-bold text-stone-900 uppercase tracking-tighter">LUXE KASHMIRI</h1>
-        <p class="text-stone-400 text-xs tracking-widest uppercase mt-4">&copy; 2026 Srinagar | Global Delivery</p>
+    <footer class="bg-stone-50 py-20 px-6 text-center border-t border-stone-100">
+        <h1 class="serif text-2xl font-bold text-stone-900 uppercase tracking-tighter">LUXE KASHMIRI</h1>
+        <p class="text-stone-400 text-[10px] tracking-[0.5em] uppercase mt-6">&copy; 2026 Pakistan | World's Finest Pashmina</p>
     </footer>
 
     <!-- Scripts -->
@@ -262,17 +290,15 @@
         function openCheckout() {
             if (cart.length === 0) return;
             document.getElementById('cart-sidebar').classList.remove('open');
+            document.getElementById('ui-overlay').classList.remove('open');
             document.getElementById('checkout-modal').classList.add('open');
-            document.getElementById('ui-overlay').classList.add('open');
             
-            // Sync Total
             let total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             document.getElementById('checkout-final-total').innerText = `$${total.toLocaleString()}.00`;
         }
 
         function closeCheckout() {
             document.getElementById('checkout-modal').classList.remove('open');
-            document.getElementById('ui-overlay').classList.remove('open');
         }
 
         function closeAllUI() {
@@ -313,7 +339,7 @@
             const checkoutBtn = document.getElementById('checkout-btn');
             
             if (cart.length === 0) {
-                itemsContainer.innerHTML = `<p class="text-center text-stone-400 py-20">Your bag is empty.</p>`;
+                itemsContainer.innerHTML = `<p class="text-center text-stone-400 py-20 font-light">Your bag is empty.</p>`;
                 totalContainer.innerText = `$0.00`;
                 countContainer.innerText = `0`;
                 checkoutBtn.disabled = true;
@@ -329,18 +355,18 @@
                 total += item.price * item.quantity;
                 count += item.quantity;
                 itemsContainer.innerHTML += `
-                    <div class="flex gap-4 border-b border-stone-50 pb-4">
-                        <img src="${item.img}" class="w-16 h-20 object-cover rounded-lg">
+                    <div class="flex gap-4 border-b border-stone-50 pb-6 items-center">
+                        <img src="${item.img}" class="w-16 h-20 object-cover rounded-lg shadow-sm">
                         <div class="flex-1">
-                            <h4 class="font-bold text-sm">${item.name}</h4>
-                            <p class="text-stone-500 text-xs">$${item.price.toLocaleString()}</p>
-                            <div class="flex items-center gap-2 mt-2">
-                                <button onclick="updateQuantity('${item.name}', -1)" class="px-2 py-0.5 border rounded text-xs">-</button>
-                                <span class="text-xs">${item.quantity}</span>
-                                <button onclick="updateQuantity('${item.name}', 1)" class="px-2 py-0.5 border rounded text-xs">+</button>
+                            <h4 class="font-bold text-xs uppercase tracking-tight text-stone-800">${item.name}</h4>
+                            <p class="text-stone-400 text-[10px] mt-1 tracking-widest">$${item.price.toLocaleString()}</p>
+                            <div class="flex items-center gap-3 mt-3">
+                                <button onclick="updateQuantity('${item.name}', -1)" class="w-6 h-6 flex items-center justify-center border border-stone-200 rounded text-xs hover:bg-stone-50 transition">-</button>
+                                <span class="text-xs font-bold">${item.quantity}</span>
+                                <button onclick="updateQuantity('${item.name}', 1)" class="w-6 h-6 flex items-center justify-center border border-stone-200 rounded text-xs hover:bg-stone-50 transition">+</button>
                             </div>
                         </div>
-                        <button onclick="removeFromCart('${item.name}')" class="text-stone-300 hover:text-red-500">&times;</button>
+                        <button onclick="removeFromCart('${item.name}')" class="text-stone-300 hover:text-red-500 text-xl transition">&times;</button>
                     </div>
                 `;
             });
@@ -352,35 +378,55 @@
         function handleOrder(e) {
             e.preventDefault();
             
-            const name = document.getElementById('cust-name').value;
-            const phone = document.getElementById('cust-phone').value;
-            const address = document.getElementById('cust-address').value;
+            const firstName = document.getElementById('cust-fname').value;
+            const lastName = document.getElementById('cust-lname').value;
+            const email = document.getElementById('cust-email').value;
+            const addr1 = document.getElementById('cust-addr1').value;
+            const addr2 = document.getElementById('cust-addr2').value;
+            const addr3 = document.getElementById('cust-addr3').value;
             const city = document.getElementById('cust-city').value;
+            const country = document.getElementById('cust-country').value;
+            const phone = document.getElementById('cust-phone').value;
+            const confirmCodeContact = document.getElementById('cust-confirm-code').value;
             const payment = document.getElementById('cust-payment').value;
             const orderId = 'LK-' + Math.floor(Math.random() * 90000 + 10000);
             
-            // Prepare order summary for WhatsApp
-            let summary = `New Order from Luxe Kashmiri\n\nOrder ID: ${orderId}\nName: ${name}\nPhone: ${phone}\nAddress: ${address}, ${city}\nPayment: ${payment}\n\nItems:\n`;
+            // Comprehensive summary for WhatsApp
+            let summary = `*NEW ORDER: ${orderId}*\n\n`;
+            summary += `*CUSTOMER DETAILS*\n`;
+            summary += `Name: ${firstName} ${lastName}\n`;
+            summary += `Email: ${email}\n`;
+            summary += `Phone: ${phone}\n`;
+            summary += `Confirmation Contact: ${confirmCodeContact}\n\n`;
+            
+            summary += `*SHIPPING ADDRESS*\n`;
+            summary += `${addr1}\n`;
+            if(addr2) summary += `${addr2}\n`;
+            if(addr3) summary += `${addr3}\n`;
+            summary += `${city}, ${country}\n\n`;
+            
+            summary += `*ORDER ITEMS*\n`;
             cart.forEach(item => {
-                summary += `- ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toLocaleString()}\n`;
+                summary += `• ${item.name} | Qty: ${item.quantity} | $${(item.price * item.quantity).toLocaleString()}\n`;
             });
-            summary += `\nTotal: ${document.getElementById('cart-total').innerText}`;
+            
+            summary += `\n*PAYMENT:* ${payment}\n`;
+            summary += `*TOTAL:* ${document.getElementById('checkout-final-total').innerText}\n\n`;
+            summary += `_Please send the confirmation code to: ${confirmCodeContact}_`;
 
-            // Show Success
+            // Success Display
             document.getElementById('order-id-display').innerText = orderId;
             document.getElementById('checkout-modal').classList.remove('open');
             document.getElementById('success-screen').classList.remove('hidden');
             document.getElementById('success-screen').classList.add('flex');
 
-            // Open WhatsApp (Optional: You can replace '1234567890' with your actual number)
-            const whatsappLink = `https://wa.me/923425596299?text=${encodeURIComponent(summary)}`;
+            // Construct and trigger WhatsApp Link (Replace with your actual number)
+            const myNumber = "923000000000"; 
+            const whatsappLink = `https://wa.me/${myNumber}?text=${encodeURIComponent(summary)}`;
+            
             setTimeout(() => {
                 window.open(whatsappLink, '_blank');
-            }, 1500);
-        }
-
-        function scrollCarousel(amount) {
-            document.getElementById('carousel').scrollBy({ left: amount, behavior: 'smooth' });
+            }, 800);
         }
     </script>
 </body>
